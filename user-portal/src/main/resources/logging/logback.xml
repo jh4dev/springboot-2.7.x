@@ -1,0 +1,70 @@
+<configuration>
+
+    <!-- 전체 로그를 기록할 appender -->
+    <appender name="ALL_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/iris-portal.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/iris-portal.%d{yyyyMMdd}.log</fileNamePattern>
+            <maxHistory>90</maxHistory> <!-- 일자별 백업파일의 보관기간 -->
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    
+    <!-- API 호출 로그를 기록할 appender -->
+    <appender name="API_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/api.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/api.%d{yyyyMMdd}.log</fileNamePattern>
+            <maxHistory>90</maxHistory> <!-- 일자별 백업파일의 보관기간 -->
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 배치 실행 로그를 기록할 appender -->
+    <appender name="BATCH_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/batch.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/batch.%d{yyyyMMdd}.log</fileNamePattern>
+            <maxHistory>90</maxHistory> <!-- 일자별 백업파일의 보관기간 -->
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    
+    <!-- 콘솔로의 출력 설정 -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    
+    <!-- 루트 로거 설정 -->
+    <logger name="com.amorepacific.iris.user.portal" level="INFO" additivity="true">
+        <appender-ref ref="API_LOG"/>
+        <appender-ref ref="BATCH_LOG"/>
+    </logger>
+    
+    <logger name="com.amorepacific.iris.user.portal.api" level="DEBUG" additivity="false">
+        <appender-ref ref="API_LOG"/>
+    </logger>
+
+    <logger name="com.amorepacific.iris.user.portal.batch" level="DEBUG" additivity="false">
+        <appender-ref ref="BATCH_LOG"/>
+    </logger>
+
+	<logger name="com.zaxxer.hikari.pool.PoolBase" level="ERROR"/>
+    <logger name="com.zaxxer.hikari.pool.HikariPool" level="ERROR"/>
+    <logger name="com.zaxxer.hikari.HikariDataSource" level="ERROR"/>
+    
+	<!-- 기본 로거 설정 (콘솔 출력) -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="ALL_LOG"/>
+    </root>
+
+</configuration>

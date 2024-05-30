@@ -5,8 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
+import org.springframework.stereotype.Component;import com.amorepacific.iris.user.portal.api.TestController;
 import com.amorepacific.iris.user.portal.common.constants.ErrorCode;
 import com.amorepacific.iris.user.portal.common.exception.BusinessException;
 import com.fasterxml.jackson.databind.JavaType;
@@ -34,6 +33,13 @@ public class ConvertUtil {
 	@Autowired
 	public void setObjectMapper(ObjectMapper objectMapper) {
 		ConvertUtil.objectMapper = objectMapper;
+	}
+	
+	public static void logTest() {
+		Package currentPackage = ConvertUtil.class.getPackage();
+        String packageName = currentPackage != null ? currentPackage.getName() : "default package";
+
+		log.info(">>>>>>>>>>>>>>>>>>>>>>>>>> Current pacakge : {}", packageName);
 	}
 	
 	/**

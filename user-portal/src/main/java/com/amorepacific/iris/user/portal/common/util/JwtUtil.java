@@ -7,6 +7,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
+import com.amorepacific.iris.user.portal.common.constants.AuthConstants;
 import com.amorepacific.iris.user.portal.config.JwtConfig;
 import com.amorepacific.iris.user.portal.dto.UserDto;
 
@@ -69,6 +72,17 @@ public final class JwtUtil {
         return header.split("")[1];
     }
 
+    public static String getTokenFromRequest(HttpServletRequest request) {
+    	
+    	String jwt = "";
+    	String authStr = request.getHeader(AuthConstants._AUTH_HEADER);
+    	if(authStr.startsWith(AuthConstants._TOKEN_TYPE)) {
+    		jwt = authStr.substring(7);
+    		
+    	}
+    	return jwt;
+    }
+    
     private static Map<String, Object> createClaims(UserDto user){
         // 공개 클레임에 사용자의 이름과 이메일을 설정하여 정보를 조회할 수 있다.
         Map<String, Object> claims = new HashMap<>();
