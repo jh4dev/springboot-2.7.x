@@ -18,33 +18,33 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 public class IrisDBConfig {
 
 	private static final String _DB_NAME = "iris";
-	
-	@Bean(name = _DB_NAME + "DataSource")
-	@Primary
-	@ConfigurationProperties(prefix="spring.datasource." + _DB_NAME)
-	public DataSource db1DataSource() {
+
+    @Bean(name = _DB_NAME + "DataSource")
+    @Primary
+    @ConfigurationProperties(prefix = "spring.datasource." + _DB_NAME)
+    DataSource db1DataSource() {
 		return DataSourceBuilder.create().build();
 	}
-	
-	@Bean(name=_DB_NAME + "SqlSessionFactory")
-	@Primary
-	public SqlSessionFactory db1SqlSessionFactory(@Qualifier(_DB_NAME + "DataSource") DataSource db1DataSource) throws Exception {
+
+    @Bean(name = _DB_NAME + "SqlSessionFactory")
+    @Primary
+    SqlSessionFactory db1SqlSessionFactory(@Qualifier(_DB_NAME + "DataSource") DataSource db1DataSource) throws Exception {
 	
 		SqlSessionFactoryBean sessionFactory = new SqlSessionFactoryBean();
         sessionFactory.setDataSource(db1DataSource);
         sessionFactory.setMapperLocations(new PathMatchingResourcePatternResolver().getResources("classpath:mappers/"+ _DB_NAME + "/*.xml"));
         return sessionFactory.getObject();
 	}
-	
-	@Bean(name = _DB_NAME + "SqlSessionTemplate")
+
+    @Bean(name = _DB_NAME + "SqlSessionTemplate")
     @Primary
-    public SqlSessionTemplate db1SqlSessionTemplate(@Qualifier(_DB_NAME + "SqlSessionFactory") SqlSessionFactory db1SqlSessionFactory) {
+    SqlSessionTemplate db1SqlSessionTemplate(@Qualifier(_DB_NAME + "SqlSessionFactory") SqlSessionFactory db1SqlSessionFactory) {
         return new SqlSessionTemplate(db1SqlSessionFactory);
     }
-	
-	@Bean(name = _DB_NAME + "TransactionManager")
+
+    @Bean(name = _DB_NAME + "TransactionManager")
     @Primary
-    public DataSourceTransactionManager db1TransactionManager(@Qualifier(_DB_NAME + "DataSource") DataSource db1DataSource) {
+    DataSourceTransactionManager db1TransactionManager(@Qualifier(_DB_NAME + "DataSource") DataSource db1DataSource) {
         return new DataSourceTransactionManager(db1DataSource);
     }
 }

@@ -38,14 +38,14 @@ public class SecurityConfig {
 	
 	@Autowired
     private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-	
+
     /**
      * 1. 정적 자원(Resource)에 대해서 인증된 사용자가  정적 자원의 접근에 대해 ‘인가’에 대한 설정을 담당하는 메서드이다.
      *
      * @return WebSecurityCustomizer
      */
     @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
+    WebSecurityCustomizer webSecurityCustomizer() {
         // 정적 자원에 대해서 Security를 적용하지 않음으로 설정
         return web -> web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations());
     }
@@ -58,25 +58,21 @@ public class SecurityConfig {
      * @throws Exception Exception
      */
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         log.debug("[+] WebSecurityConfig Start !!! ");
 
         http
                 // [STEP1] 서버에 인증정보를 저장하지 않기에 csrf를 사용하지 않는다.
-                .csrf().disable()
-
+                .csrf(csrf -> csrf.disable())
                 // [STEP2] 토큰을 활용하는 경우 모든 요청에 대해 '인가'에 대해서 적용
                 .authorizeHttpRequests(authz -> authz.anyRequest().permitAll())
-                
                 // [STEP3] JWT 인증
                 .addFilterBefore(jwtFilter, BasicAuthenticationFilter.class)
-                .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint)
-                .and()
+                .exceptionHandling(handling -> handling.authenticationEntryPoint(jwtAuthenticationEntryPoint))
                 // [STEP4] JWT 사용하므로 세션 미사용 처리
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
+                .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 // [STEP5] form 기반의 로그인에 대해 비 활성화하며 커스텀으로 구성한 필터를 사용한다.
-                .formLogin().disable()
+                .formLogin(login -> login.disable())
                 // [STEP6] Spring Security Custom Filter Load - Form '인증'에 대해서 사용
                 .addFilterBefore(customAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         
@@ -92,7 +88,7 @@ public class SecurityConfig {
      * @return AuthenticationManager
      */
     @Bean
-    public AuthenticationManager authenticationManager() {
+    AuthenticationManager authenticationManager() {
         return new ProviderManager(customAuthenticationProvider());
     }
 
@@ -103,7 +99,7 @@ public class SecurityConfig {
      * @return CustomAuthenticationProvider
      */
     @Bean
-    public CustomAuthenticationProvider customAuthenticationProvider() {
+    CustomAuthenticationProvider customAuthenticationProvider() {
         return new CustomAuthenticationProvider(bCryptPasswordEncoder());
     }
 
@@ -123,7 +119,7 @@ public class SecurityConfig {
      * @return CustomAuthenticationFilter
      */
     @Bean
-    public CustomAuthenticationFilter customAuthenticationFilter() {
+    CustomAuthenticationFilter customAuthenticationFilter() {
         CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationManager());
         customAuthenticationFilter.setFilterProcessesUrl("/api/v1/user/login");     // 접근 URL
         customAuthenticationFilter.setAuthenticationSuccessHandler(customLoginSuccessHandler());    // '인증' 성공 시 해당 핸들러로 처리를 전가한다.
@@ -138,7 +134,7 @@ public class SecurityConfig {
      * @return CustomLoginSuccessHandler
      */
     @Bean
-    public CustomAuthSuccessHandler customLoginSuccessHandler() {
+    CustomAuthSuccessHandler customLoginSuccessHandler() {
         return new CustomAuthSuccessHandler();
     }
 
@@ -148,7 +144,7 @@ public class SecurityConfig {
      * @return CustomAuthFailureHandler
      */
     @Bean
-    public CustomAuthFailureHandler customLoginFailureHandler() {
+    CustomAuthFailureHandler customLoginFailureHandler() {
         return new CustomAuthFailureHandler();
     }
 
