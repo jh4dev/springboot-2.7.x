@@ -33,6 +33,8 @@ public class UserDto {
 	
 	/* 사용자 소속 명 */
 	private String userTeamNm;
+
+	private String userTestflag;
 	
 
 	@Builder
